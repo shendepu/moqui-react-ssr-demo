@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<moqui-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/moqui-conf-2.0.xsd">
+    <webapp-list>
+        <webapp name="webroot" https-enabled="false" require-session-token="false">
+            <after-startup><actions>
+                <script><![CDATA[
+                    import org.moqui.resource.ResourceReference
+                    String reactSSRStaticPath = "component://moqui-react-ssr/screen/ReactSSRRoot/static"
+                    Map<String, ResourceReference> jsFileMap = new LinkedHashMap<>()
+                    jsFileMap.put('nashorn-polyfill',
+                            ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-polyfill.js"))
+                    jsFileMap.put('nashorn-eventloop',
+                            ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-eventloop.js"))
+                    jsFileMap.put('vendor', null)
+
+                    jsFileMap.put('pre-app',
+                            ec.resource.getLocationReference("${reactSSRStaticPath}/pre-app.js"))
+                    jsFileMap.put('app', null)
+                    jsFileMap.put('post-app',
+                            ec.resource.getLocationReference("${reactSSRStaticPath}/post-app.js"))
+
+                    Map<String, ResourceReference> cssFileMap = new LinkedHashMap<>()
+                    cssFileMap.put('app', null)
+
+                    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
+                    for (ResourceReference fileRr in rr.getDirectoryEntries()) {
+                        if (!fileRr.isFile()) continue
+                        String fileName = fileRr.getFileName()
+                        if (fileName.endsWith(".js")) {
+                            if (fileName.startsWith("vendor.")) jsFileMap["vendor"] = fileRr
+                            if (fileName.startsWith("app.")) jsFileMap["app"] = fileRr
+                        } else if (fileName.endsWith(".css")) {
+                            if (fileName.startsWith("app.")) cssFileMap["app"] = fileRr
+                        }
+                    }
+
+                    def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
+
+                    reactAppCache.put('appJsFileMap', jsFileMap)
+                    reactAppCache.put('cssFileMap', cssFileMap)
+                ]]></script>
+            </actions></after-startup>
+        </webapp>
+    </webapp-list>
+
+    <cache-list warm-on-start="false">
+        <cache name="react.ssr.apps.ReactSSRDemo" value-type="Map"/>
+    </cache-list>
+</moqui-conf>
