@@ -3,67 +3,22 @@
         default-menu-include="false" standalone="true">
     <actions>
         <script><![CDATA[
-            import jdk.nashorn.api.scripting.NashornScriptEngine
-            import jdk.nashorn.api.scripting.ScriptObjectMirror
-            import jdk.nashorn.api.scripting.JSObject
-            import java.util.function.Consumer
-            import java.util.function.Function
-
-            import javax.script.ScriptEngineManager
-            import javax.script.ScriptException
-            import javax.script.ScriptContext;
-            import java.io.InputStream
-            import java.io.InputStreamReader
-            import java.io.Reader
-            import java.util.List
-            import org.moqui.resource.ResourceReference
-            import org.moqui.context.ExecutionContext
-            import com.fasterxml.jackson.databind.ObjectMapper
-
-    Map<String, ResourceReference> jsFileMap = new LinkedHashMap<>()
-    jsFileMap.put('nashorn-polyfill',
-                  ec.resource.getLocationReference("component://moqui-react-ssr/screen/ReactSSRRoot/static/nashorn-polyfill.js"))
-    jsFileMap.put('nashorn-eventloop',
-                  ec.resource.getLocationReference("component://moqui-react-ssr/screen/ReactSSRRoot/static/nashorn-eventloop.js"))
-    jsFileMap.put('vendor', null)
-    jsFileMap.put('app', null)
-    jsFileMap.put('print-app',
-                  ec.resource.getLocationReference("component://moqui-react-ssr/screen/ReactSSRRoot/static/print-app.js"))
-
-    Map<String, ResourceReference> cssFileMap = new LinkedHashMap<>()
-    cssFileMap.put('app', null)
-
-    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
-    for (ResourceReference fileRr in rr.getDirectoryEntries()) {
-        if (!fileRr.isFile()) continue
-        String fileName = fileRr.getFileName()
-        if (fileName.endsWith(".js")) {
-            if (fileName.startsWith("vendor.")) jsFileMap["vendor"] = fileRr
-            if (fileName.startsWith("app.")) jsFileMap["app"] = fileRr
-            if (fileName.startsWith("0.counter.")) jsFileMap["0.counter"] = fileRr
-        } else if (fileName.endsWith(".css")) {
-            if (fileName.startsWith("app.")) cssFileMap["app"] = fileRr
-        }
-    }
-
-    ec.context.put('jsFileMap', jsFileMap)
-    ec.context.put('cssFileMap', cssFileMap)
-
         import com.moqui.ssr.React
 
-        React react = new React(ec, jsFileMap)
+        def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
 
-        String contentHtml = react.render();
-        // String contentHtml = ""
-        ec.context.put("content", contentHtml);
+        ec.context.put('appJsFileMap', reactAppCache.get('appJsFileMap'))
+        ec.context.put('cssFileMap', reactAppCache.get('cssFileMap'))
 
-        Object state = react.getState()
+        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", reactAppCache.get('appJsFileMap'))
+
+        Map<String, Object> renderResult = react.render(ec.web.request);
+
+        ec.context.put("content", renderResult.get("html"));
+
+        Object state = renderResult.get("state")
 
         ec.context.put("storeState", new groovy.json.JsonBuilder(state).toString());
-        // ec.logger.info(state)
-        System.out.println('--------- state')
-        System.out.println(state)
-
         ]]></script>
 
     </actions>
