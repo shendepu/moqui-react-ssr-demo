@@ -14,7 +14,7 @@
     </script>
 
     <div id="root" style="height: 100%">${content}</div>
-    <script type="text/javascript" src="${basePath}/dist/${ec.context.appJsFileMap['vendor'].getFileName()}"></script>
-    <script type="text/javascript" src="${basePath}/dist/${ec.context.appJsFileMap['app'].getFileName()}"></script>
+    <script type="text/javascript" src="${basePath}/dist/${ec.context.appJsFileMap['vendor'].resourceReference.getFileName()}"></script>
+    <script type="text/javascript" src="${basePath}/dist/${ec.context.appJsFileMap['app'].resourceReference.getFileName()}"></script>
 </body>
 </html>

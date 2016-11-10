@@ -4,40 +4,40 @@
         <webapp name="webroot" https-enabled="false" require-session-token="false">
             <after-startup><actions>
                 <script><![CDATA[
-                    import org.moqui.resource.ResourceReference
-                    String reactSSRStaticPath = "component://moqui-react-ssr/screen/ReactSSRRoot/static"
-                    Map<String, ResourceReference> jsFileMap = new LinkedHashMap<>()
-                    jsFileMap.put('nashorn-polyfill',
-                            ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-polyfill.js"))
-                    jsFileMap.put('nashorn-eventloop',
-                            ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-eventloop.js"))
-                    jsFileMap.put('vendor', null)
+    import org.moqui.resource.ResourceReference
+    String reactSSRStaticPath = "component://moqui-react-ssr/screen/ReactSSRRoot/static"
+    Map<String, Map<String, Object>> jsFileMap = new LinkedHashMap<>()
+    jsFileMap.put('nashorn-polyfill',[ runOnce: true,
+              resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-polyfill.js") ])
+    jsFileMap.put('nashorn-eventloop', [ runOnce: true,
+            resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-eventloop.js") ])
+    jsFileMap.put('vendor', [ runOnce: true, resourceReference: null ])
 
-                    jsFileMap.put('pre-app',
-                            ec.resource.getLocationReference("${reactSSRStaticPath}/pre-app.js"))
-                    jsFileMap.put('app', null)
-                    jsFileMap.put('post-app',
-                            ec.resource.getLocationReference("${reactSSRStaticPath}/post-app.js"))
+    jsFileMap.put('pre-app', [ runOnce: true,
+            resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/pre-app.js") ])
+    jsFileMap.put('app', [ runOnce: false, resourceReference: null ])
+    jsFileMap.put('post-app', [ runOnce: false,
+            resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/post-app.js") ])
 
-                    Map<String, ResourceReference> cssFileMap = new LinkedHashMap<>()
-                    cssFileMap.put('app', null)
+    Map<String, ResourceReference> cssFileMap = new LinkedHashMap<>()
+    cssFileMap.put('app', null)
 
-                    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
-                    for (ResourceReference fileRr in rr.getDirectoryEntries()) {
-                        if (!fileRr.isFile()) continue
-                        String fileName = fileRr.getFileName()
-                        if (fileName.endsWith(".js")) {
-                            if (fileName.startsWith("vendor.")) jsFileMap["vendor"] = fileRr
-                            if (fileName.startsWith("app.")) jsFileMap["app"] = fileRr
-                        } else if (fileName.endsWith(".css")) {
-                            if (fileName.startsWith("app.")) cssFileMap["app"] = fileRr
-                        }
-                    }
+    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
+    for (ResourceReference fileRr in rr.getDirectoryEntries()) {
+        if (!fileRr.isFile()) continue
+        String fileName = fileRr.getFileName()
+        if (fileName.endsWith(".js")) {
+            if (fileName.startsWith("vendor.")) jsFileMap["vendor"].resourceReference = fileRr
+            if (fileName.startsWith("app.")) jsFileMap["app"].resourceReference = fileRr
+        } else if (fileName.endsWith(".css")) {
+            if (fileName.startsWith("app.")) cssFileMap["app"] = fileRr
+        }
+    }
 
-                    def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
+    def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
 
-                    reactAppCache.put('appJsFileMap', jsFileMap)
-                    reactAppCache.put('cssFileMap', cssFileMap)
+    reactAppCache.put('appJsFileMap', jsFileMap)
+    reactAppCache.put('cssFileMap', cssFileMap)
                 ]]></script>
             </actions></after-startup>
         </webapp>
