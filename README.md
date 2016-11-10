@@ -45,3 +45,7 @@ The html file from server contains server rendered html and initial state for re
 </body>
 </html>
 ```
+
+# License
+
+Moqui React SSR Demo is [CC0-licensed](./LICENSE.md). we also provide an addition [copyright and patent grant](./AUTHORS) 
