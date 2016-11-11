@@ -6,29 +6,44 @@
                 <script><![CDATA[
     import org.moqui.resource.ResourceReference
     String reactSSRStaticPath = "component://moqui-react-ssr/screen/ReactSSRRoot/static"
-    Map<String, Map<String, Object>> jsFileMap = new LinkedHashMap<>()
-    jsFileMap.put('nashorn-polyfill',[ runOnce: true,
+    Map<String, Map<String, Object>> jsSSRFileMap = new LinkedHashMap<>()
+    jsSSRFileMap.put('nashorn-polyfill',[ runOnce: true,
               resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-polyfill.js") ])
-    jsFileMap.put('nashorn-eventloop', [ runOnce: true,
+    jsSSRFileMap.put('nashorn-eventloop', [ runOnce: true,
             resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/nashorn-eventloop.js") ])
-    jsFileMap.put('vendor', [ runOnce: true, resourceReference: null ])
+    jsSSRFileMap.put('vendor', [ runOnce: true, resourceReference: null ])
 
-    jsFileMap.put('pre-app', [ runOnce: true,
+    jsSSRFileMap.put('pre-app', [ runOnce: true,
             resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/pre-app.js") ])
-    jsFileMap.put('app', [ runOnce: false, resourceReference: null ])
-    jsFileMap.put('post-app', [ runOnce: false,
+    jsSSRFileMap.put('app', [ runOnce: false, resourceReference: null ])
+    jsSSRFileMap.put('post-app', [ runOnce: false,
             resourceReference: ec.resource.getLocationReference("${reactSSRStaticPath}/post-app.js") ])
+
+    Map<String, ResourceReference> jsBrowserFileMap = new LinkedHashMap<>()
+    jsBrowserFileMap.put('vendor', null)
+    jsBrowserFileMap.put('app', null)
 
     Map<String, ResourceReference> cssFileMap = new LinkedHashMap<>()
     cssFileMap.put('app', null)
 
-    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
+    ResourceReference rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist_ssr")
     for (ResourceReference fileRr in rr.getDirectoryEntries()) {
         if (!fileRr.isFile()) continue
         String fileName = fileRr.getFileName()
         if (fileName.endsWith(".js")) {
-            if (fileName.startsWith("vendor.")) jsFileMap["vendor"].resourceReference = fileRr
-            if (fileName.startsWith("app.")) jsFileMap["app"].resourceReference = fileRr
+            if (fileName.startsWith("vendor.")) jsSSRFileMap["vendor"].resourceReference = fileRr
+            if (fileName.startsWith("app.")) jsSSRFileMap["app"].resourceReference = fileRr
+        }
+    }
+
+
+    rr = ec.resource.getLocationReference("component://moqui-react-ssr-demo/screen/ReactSSRRoot/dist")
+    for (ResourceReference fileRr in rr.getDirectoryEntries()) {
+        if (!fileRr.isFile()) continue
+        String fileName = fileRr.getFileName()
+        if (fileName.endsWith(".js")) {
+            if (fileName.startsWith("vendor.")) jsBrowserFileMap["vendor"] = fileRr
+            if (fileName.startsWith("app.")) jsBrowserFileMap["app"] = fileRr
         } else if (fileName.endsWith(".css")) {
             if (fileName.startsWith("app.")) cssFileMap["app"] = fileRr
         }
@@ -36,7 +51,8 @@
 
     def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
 
-    reactAppCache.put('appJsFileMap', jsFileMap)
+    reactAppCache.put('jsSSRFileMap', jsSSRFileMap)
+    reactAppCache.put('jsBrowserFileMap', jsBrowserFileMap)
     reactAppCache.put('cssFileMap', cssFileMap)
                 ]]></script>
             </actions></after-startup>

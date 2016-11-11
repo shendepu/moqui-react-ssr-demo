@@ -7,10 +7,10 @@
 
         def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
 
-        ec.context.put('appJsFileMap', reactAppCache.get('appJsFileMap'))
+        ec.context.put('jsBrowserFileMap', reactAppCache.get('jsBrowserFileMap'))
         ec.context.put('cssFileMap', reactAppCache.get('cssFileMap'))
 
-        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", ec.context.basePath, reactAppCache.get('appJsFileMap'), ['jsTimeout': 1000])
+        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", ec.context.basePath, reactAppCache.get('jsSSRFileMap'), ['jsTimeout': 1000])
 
         Map<String, Object> renderResult = react.render(ec.web.request);
 
