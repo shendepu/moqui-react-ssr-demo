@@ -10,15 +10,13 @@
         ec.context.put('jsBrowserFileMap', reactAppCache.get('jsBrowserFileMap'))
         ec.context.put('cssFileMap', reactAppCache.get('cssFileMap'))
 
-        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", ec.context.basePath, reactAppCache.get('jsSSRFileMap'), ['jsTimeout': 1000])
+        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", ec.context.basePath, reactAppCache.get('jsSSRFileMap'), ['jsTimeout': 15000])
 
         Map<String, Object> renderResult = react.render(ec.web.request);
 
         ec.context.put("content", renderResult.get("html"));
 
-        Object state = renderResult.get("state")
-
-        ec.context.put("storeState", new groovy.json.JsonBuilder(state).toString());
+        ec.context.put("storeState", new groovy.json.JsonBuilder(renderResult.get("state")).toString());
         ]]></script>
 
     </actions>
