@@ -9,7 +9,7 @@
     String reactSSRStaticPath = "component://moqui-react-ssr/screen/ReactSSRRoot/static"
     Map<String, Map<String, Object>> jsSSRFileMap = new LinkedHashMap<>()
 
-    jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascripts(ec, ['nashorn-polyfill', 'nashorn-eventloop'], true))
+    jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascripts(ec, ['nashorn-polyfill'], true))
     jsSSRFileMap.put('vendor.', [ runOnce: true, resourceReference: null ])
     jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascript(ec, 'pre-app', true))
     jsSSRFileMap.put('app.', [ runOnce: false, resourceReference: null ])
