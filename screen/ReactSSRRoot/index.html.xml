@@ -10,7 +10,7 @@
         ec.context.put('jsBrowserFileMap', reactAppCache.get('jsBrowserFileMap'))
         ec.context.put('cssFileMap', reactAppCache.get('cssFileMap'))
 
-        React react = ec.getTool("ReactSSR", com.moqui.ssr.React.class, "ReactSSRDemo", ec.context.basePath, reactAppCache.get('jsSSRFileMap'), ['jsTimeout': 15000])
+        React react = ec.getTool("ReactSSR", React.class, "ReactSSRDemo")
 
         Map<String, Object> renderResult = react.render(ec.web.request);
 

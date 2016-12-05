@@ -11,7 +11,7 @@
 
     jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascripts(ec, ['nashorn-polyfill'], true))
     jsSSRFileMap.put('vendor.', [ runOnce: true, resourceReference: null ])
-    jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascript(ec, 'pre-app', true))
+    jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascript(ec, 'pre-app', false))
     jsSSRFileMap.put('app.', [ runOnce: false, resourceReference: null ])
     jsSSRFileMap.putAll(ReactSSRUtil.getStaticJavascript(ec, 'post-app', false))
 
@@ -50,9 +50,16 @@
 
     def reactAppCache = ec.cache.getCache('react.ssr.apps.ReactSSRDemo')
 
-    reactAppCache.put('jsSSRFileMap', jsSSRFileMap)
     reactAppCache.put('jsBrowserFileMap', jsBrowserFileMap)
     reactAppCache.put('cssFileMap', cssFileMap)
+
+
+
+    import com.moqui.ssr.React
+    React react = ec.getTool("ReactSSR", React.class, "ReactSSRDemo", "/apps/react-ssr-demo",
+            jsSSRFileMap,
+            ['jsTimeout': 30000],
+            ['minIdle': 30, 'maxIdle': 100])
                 ]]></script>
             </actions></after-startup>
         </webapp>
