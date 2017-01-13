@@ -10,15 +10,24 @@
         ec.context.put('jsBrowserFileMap', reactAppCache.get('jsBrowserFileMap'))
         ec.context.put('cssFileMap', reactAppCache.get('cssFileMap'))
 
+        ec.logger.info("============ ec.web.request.getCookies() ============\n${ec.web.request.getHeader("Cookie")}")
+        System.out.println(ec.web.request.getCookies())
+
         React react = ec.getTool("ReactSSR", React.class, "ReactSSRDemo")
 
-        Map<String, Object> renderResult = react.render(ec.web.request);
+        try {
+            Map<String, Object> renderResult = react.render(ec.web.request);
 
-        ec.context.put("content", renderResult.get("html"));
+            ec.context.put("content", renderResult.get("html"));
+            ec.logger.info("${renderResult.get("state")}")
 
-        ec.context.put("storeState", new groovy.json.JsonBuilder(renderResult.get("state")).toString());
+            ec.context.put("storeState", new groovy.json.JsonBuilder(renderResult.get("state")).toString());
+        } catch (org.moqui.context.AuthenticationRequiredException e) {
+            ec.logger.error(ec.web.getRequestUrl())
+            ((org.moqui.impl.context.WebFacadeImpl) ec.web).saveScreenLastInfo("/apps/react-ssr-demo/apollo-demo/one", null)
+            sri.sendRedirectAndStopRender('/Login')
+        }
         ]]></script>
-
     </actions>
     <widgets>
         <render-mode>
