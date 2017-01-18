@@ -13,6 +13,7 @@
     <script>
         window.___INITIAL_STATE__ = ${storeState};
         window.__APP_BASE_PATH__ = '${basePath}';
+        window.__REQ_URL_PREFIX__ = '${requestUrlPrefix}';
     </script>
 
     <div id="root" style="height: 100%">${content}</div>

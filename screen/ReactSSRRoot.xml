@@ -19,8 +19,10 @@
         // System.out.println(ec.web.request.getCookies())
 
         React react = ec.getTool("ReactSSR", React.class, "ReactSSRDemo")
+        ec.context.put('requestUrlPrefix', getUrlPrefix(ec.web.request))
         try {
             Map<String, Object> renderResult = react.render(ec.web.request)
+
 
             ec.context.put("content", renderResult.get("html") ?: "")
 
@@ -32,6 +34,15 @@
             ((org.moqui.impl.context.WebFacadeImpl) ec.web).saveScreenLastInfo(ec.web.request.getRequestURI(), ec.web.getRequestParameters())
             sri.sendRedirectAndStopRender('/Login')
         }
+
+    String getUrlPrefix(javax.servlet.http.HttpServletRequest request) {
+        StringBuilder requestUrl = new StringBuilder();
+        requestUrl.append(request.getScheme());
+        requestUrl.append("://" + request.getServerName());
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) requestUrl.append(":" + request.getServerPort());
+        return requestUrl.toString();
+    }
+
         ]]></script>
     </pre-actions>
     <widgets>
