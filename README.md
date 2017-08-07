@@ -10,11 +10,10 @@ This demo depends on:
 ```bash
 git clone https://github.com/moqui/moqui-framework .
 cd moqui-framework
-./gradlew getRuntime
-                                                                                                     
-git clone https://github.com/shendepu/moqui-react-ssr.git runtime/component/moqui-react-ssr
+gradle getComponent -Pcomponent=moqui-react-ssr
+
 git clone https://github.com/shendepu/moqui-react-ssr-demo.git runtime/component/moqui-react-ssr-demo
-gradle build cleanAll load run
+gradle cleanAll build load run
 ```
 
 ## Run demo 
