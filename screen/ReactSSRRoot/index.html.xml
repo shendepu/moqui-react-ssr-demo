@@ -14,9 +14,11 @@
 
         Map<String, Object> renderResult = react.render(ec.web.request);
 
-        ec.context.put("content", renderResult.get("html"));
+        ec.context.put("content", renderResult.get("html") ? renderResult.get("html") : "");
 
-        ec.context.put("storeState", new groovy.json.JsonBuilder(renderResult.get("state")).toString());
+        if (renderResult.get("state")) {
+            ec.context.put("storeState", new groovy.json.JsonBuilder(renderResult.get("state")).toString());
+        }
         ]]></script>
 
     </actions>

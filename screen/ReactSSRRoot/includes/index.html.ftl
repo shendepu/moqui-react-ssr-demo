@@ -9,8 +9,12 @@
 </head>
 <body>
     <script>
-        window.___INITIAL_STATE__ = ${storeState};
-        window.__APP_BASE_PATH__ = '${basePath}';
+        <#if storeState?exists>
+            window.___INITIAL_STATE__ = ${storeState};
+        </#if>
+        <#if basePath?exists>
+            window.__APP_BASE_PATH__ = '${basePath}';
+        </#if>
     </script>
 
     <div id="root" style="height: 100%">${content}</div>
